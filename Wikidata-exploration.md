@@ -27,10 +27,10 @@ The objective of this stage of the workflow is to analyse the available informat
 
 To begin with, we select a few people from the population chosen for the research and inspect their entries in Wikidata. This allows us to identify the properties that will enable us to find the population and determine what information is available.
 
-* [Victor Ambartsumian](http://www.wikidata.org/entity/Q164396)
+* [Joyce White](http://www.wikidata.org/entity/Q164396](https://www.wikidata.org/wiki/Q103974661])(https://www.wikidata.org/wiki/Q18386003))
   * On this page or 'card' we can inspect the RDF triples available about this person in the Wikidata knowledge graph
   * Carefullyl inspect the properties ‘employer’ and ‘position held’
-    * Cf. the ['card' of the same person in DBpedia](https://dbpedia.org/resource/Viktor_Ambartsumian)
+    * Cf. the ['card' of the same person in DBpedia](https://dbpedia.org/resource/Viktor_Ambartsumian) - couldn't find it for Joyce White
     * Note the difference between a property-centered ontology and an assertion-centered ontology, which de facto contains implicit temporalities.
 * [Werner Heisenberg](http://www.wikidata.org/entity/Q40904)
 
@@ -43,14 +43,14 @@ To begin with, we select a few people from the population chosen for the researc
 
 ## Querying Wikidata to find the population
 
-For astronomers and physicists, the following properties appear to be an effective way of identifying the population::
+For archaeologists, the following properties appear to be an effective way of identifying the population:
 
-* [occupation](https://m.wikidata.org/wiki/Property:P106)
+* [Human](https://m.wikidata.org/wiki/Property:P31)
 * [field of work](https://m.wikidata.org/wiki/Property:P101)
 
-### Number of persons with 'occupation' et/ou 'field of work' in astronomy and physics
+### Number of persons with 'occupation' et/ou 'field of work' in archaeology
 
-Figures as of February 16, 2026.
+Figures as of February 16, 2026.: **25'324**
 
 ```
 SELECT (COUNT(*) as ?eff)
@@ -131,7 +131,7 @@ WHERE {
 
 ### Actual number of people
 
-48094 las of February 16, 2026.
+48094 as of February 16, 2026.
 
 There is an overlap of approximately 7,800 individuals who are both astronomers and physicists.
 
