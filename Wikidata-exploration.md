@@ -33,7 +33,6 @@ To begin with, we select a few people from the population chosen for the researc
     * Cf. the ['card' of the same person in DBpedia](https://dbpedia.org/resource/Viktor_Ambartsumian) - couldn't find it for Joyce White
     * Note the difference between a property-centered ontology and an assertion-centered ontology, which de facto contains implicit temporalities.
 * [Werner Heisenberg](http://www.wikidata.org/entity/Q40904)
-* Additional person
 
 ### URI vs URL
 
