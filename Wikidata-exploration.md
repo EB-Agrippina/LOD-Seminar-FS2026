@@ -30,9 +30,8 @@ To begin with, we select a few people from the population chosen for the researc
 * [Joyce White](http://www.wikidata.org/entity/Q164396](https://www.wikidata.org/wiki/Q103974661])(https://www.wikidata.org/wiki/Q18386003))
   * On this page or 'card' we can inspect the RDF triples available about this person in the Wikidata knowledge graph
   * Carefullyl inspect the properties ‘employer’ and ‘position held’
-    * Cf. the ['card' of the same person in DBpedia](https://dbpedia.org/resource/Viktor_Ambartsumian) - couldn't find it for Joyce White
+    * Cf. the ['card' of the same person in DBpedia](https://dbpedia.org/resource/Viktor_Ambartsumian)
     * Note the difference between a property-centered ontology and an assertion-centered ontology, which de facto contains implicit temporalities.
-* [Werner Heisenberg](http://www.wikidata.org/entity/Q40904)
 
 ### URI vs URL
 
@@ -85,7 +84,7 @@ WHERE {
 }  
 ```
 
-#### Physicians
+### Physicists
 
 41629 as of February 16, 2026.
 
@@ -272,32 +271,35 @@ WHERE
 
 Inspect individuals' cards and observe their properties. The code determines what languages do the entries of archaeologists that have no English entry have.
 
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-PREFIX wd: <http://www.wikidata.org/entity/>
-PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+```
+PREFIX rdfs: [http://www.w3.org/2000/01/rdf-schema#](http://www.w3.org/2000/01/rdf-schema#)
+PREFIX xsd: [http://www.w3.org/2001/XMLSchema#](http://www.w3.org/2001/XMLSchema#)
+PREFIX wd: [http://www.wikidata.org/entity/](http://www.wikidata.org/entity/)
+PREFIX wdt: [http://www.wikidata.org/prop/direct/](http://www.wikidata.org/prop/direct/)
 
-SELECT ?archaeologist ?year 
-       (group_concat(?iso_lang ; separator = ',') AS ?langs) #concatinates the language shortenings with commas in between and saves the string as ?langs.
-       (max(?archaeologistLabel) AS ?nameLabel)
+SELECT ?archaeologist ?year
+(group_concat(?iso_lang ; separator = ',') AS ?langs) #concatinates the language shortenings with commas in between and saves the string as ?langs.
+(max(?archaeologistLabel) AS ?nameLabel)
 WHERE {
-      {SELECT DISTINCT ?archaeologist ?year #this second select needs to be separately packaged. All this does is find all the archaeologists without an English entry.
-         WHERE {?archaeologist wdt:P31 wd:Q5 ;
-                               wdt:P106 wd:Q3621491 ;
-                               wdt:P569 ?birthDate .
-         BIND(REPLACE(str(?birthDate), "(.*)([0-9]{4})(.*)", "$2") AS ?year)
-         FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981)
-         MINUS {?archaeologist rdfs:label ?archaeologistLabel.
-               FILTER(LANG(?archaeologistLabel) = 'en')}
+        {SELECT DISTINCT ?archaeologist ?year
+        #this second select needs to be separately packaged. All this does is find all the archaeologists without an English entry.
+            WHERE {?archaeologist wdt:P31 wd:Q5 ;
+                                  wdt:P106 wd:Q3621491 ;
+                                  wdt:P569 ?birthDate .
+                   BIND(REPLACE(str(?birthDate), "(.*)([0-9]{4})(.*)", "$2") AS ?year)
+                   FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981)
+                   MINUS {?archaeologist rdfs:label ?archaeologistLabel.
+                   FILTER(LANG(?archaeologistLabel) = 'en')}
+                   }
          }
-       }
-       ?archaeologist rdfs:label ?archaeologistLabel .  
-       BIND(LANG(?archaeologistLabel) AS ?iso_lang) #What languages are the entries for archaeologists without English entries.
+        ?archaeologist rdfs:label ?archaeologistLabel .
+        BIND(LANG(?archaeologistLabel) AS ?iso_lang) #What languages are the entries for archaeologists without English entries.
 }
+
 GROUP BY ?archaeologist ?year #Groups by archaeologist and the birth years.
 ORDER BY ?archaeologist # Alphapetically/numerically sorted based on the id of the archaeologist.
 LIMIT 100
-
+```
 
 ## List the available properties and their numbers.
 
@@ -316,32 +318,31 @@ WHERE {
 {
     SELECT DISTINCT  ?p  (count(*) as ?eff)
     WHERE {
-        ?item wdt:P31 wd:Q5; 
-             wdt:P569 ?birthDate.
+        ?archaeologist wdt:P31 wd:Q5;
+                       wdt:P106 wd:Q3621491 ; 
+                       wdt:P569 ?birthDate.
         BIND(REPLACE(str(?birthDate), "(.*)([0-9]{4})(.*)", "$2") AS ?year)
-        FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981)# Any instance of a human.
-            {?item wdt:P106 wd:Q11063}
-            UNION
-            {?item wdt:P101 wd:Q333} 
-            UNION
-            {?item wdt:P106 wd:Q169470}
-            UNION
-            {?item wdt:P101 wd:Q413}.
-			?item ?p ?o.
+        FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981)
+        ?archaeologist ?p ?o.
         }
 		GROUP BY ?p
     }
 
-    ## we need this construct to get the label of the property
+    ## we need this (?p ?o) construct to get the label of the property
     ## properties are also entities in Wikidata,
     ## but only in the entities' namespace
 
     ?prop wikibase:directClaim ?p .
     ?prop rdfs:label ?propLabel.
+
+    # ?p which is represented be the wtd:ZYX doesn’t have a human readable label attached to it.
+    # so this bit links wtd:XYZ with wd:ZYX which does have a readable label that it then shows you at the end.
+
     FILTER(LANG(?propLabel) = 'en')
     }  
 ORDER BY DESC(?eff) 
 ```
+
 **NB**. Please note that timeout issues may occur when executing the query on the Wikidata SPARQL endpoint. This is because the query takes too long to process and an error message appears.
 &nbsp;
 In this case, you must restrict the period of time considered or limit the number of UNION clauses and break the query down into different parts.
@@ -352,7 +353,7 @@ This list is then exported and transformed to a table in order to document the s
 
 * execute the query then download the result in csv format into your projet's repository. Cf. the file in this directory: data_queries/Wikidata/wdt_population_outgoing_properties_20260302.csv
 * open the CSV in VSCode as text and convert it to a Markdown Table using the plugin 'CSV to Markdown Table (phoihos)'
-* copy the whole table and paste it a new Markdown document, cf. [Wikidata-liste-proprietes-population.md](Wikidata-liste-proprietes-population.md)
+* copy the whole table and paste it a new Markdown document, cf. [Wikidata-list-of-properties-archaeologists.md](Wikidata-list-of-properties-archaeologists.mdWikidata-liste-proprietes-population.md)
 * close the CSV file
 
 In the column 'notes' of the property table you can add links to the pages where you document the treatement of the corresponding information.
@@ -394,6 +395,7 @@ WHERE {
     }  
 ORDER BY DESC(?eff) 
 ```
+
 Relevant incoming properties:
 
 
@@ -464,6 +466,7 @@ WHERE {
     }  
 ORDER BY ?propLabel ?itemType 
 ```
+
 ## Same query but grouped
 
 ```
