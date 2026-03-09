@@ -48,37 +48,28 @@ For archaeologists, the following properties appear to be an effective way of id
 * [Human](https://m.wikidata.org/wiki/Property:P31)
 * [field of work](https://m.wikidata.org/wiki/Property:P101)
 
-### Number of persons with 'occupation' et/ou 'field of work' in archaeology
+### Number of persons with 'occupation' and/or 'field of work' in archaeology
 
-Figures as of February 16, 2026.: **25'324**
+Figures as of March 09, 2026.: **26'020**
 
 ```
-SELECT (COUNT(*) as ?eff)
+SELECT (COUNT(*) as ?eff) #?eff is a variable selected to store the COUNT(*), ie. the number of archaeoligists are found
 WHERE {
 
     ## we use this clause in order to get only humans and not
     ## pages or any other entity wrongly associated to the occupation or field of work
 
-    ?item wdt:P31 wd:Q5;  # Any instance of a human.
+    ?archaeologist wdt:P31 wd:Q5;  # Any instance of a human.
   
-          wdt:P106 wd:Q11063  # astronomer 11750
-  
-    # wdt:P101 wd:Q333  # astronomy 2161
-    # wdt:P106 wd:Q169470 # physicist 36002
-    #  wdt:P101 wd:Q413 # physics ~ 5625
-
-    ### autres sujets
-    #  wdt:P106 wd:Q155647  # astrologer 1364
-    #  wdt:P101 wd:Q34362 # astrology 241
-    #  wdt:P106 wd:Q170790  # mathematician 39562
-    #  wdt:P106 wd:Q901 # scientist 36117
-
+                   wdt:P106 wd:Q3621491  # archaeologist #indented and the previous line ends with ;, so that the program knows that it's still working with the variable ?archaeologists.
+SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en".} #filters for enteties in Englisch
 }  
+
 ```
 
 ### Combine 'occupation' with 'field of work'
 
-We use here the **UNION** clause which allows to express an **OR** condition and merge two populations.
+We use here the **UNION** clause which allows to express an **OR** condition and merge two populations. The example of the combination of astronomers and physicians has been left, since a combination of two fields is not relevant for my project, but the referencere may be useful for future projects.
 
 #### Astronomers
 
@@ -159,51 +150,52 @@ WHERE {
 
 ### Add a filter on the birth year
 
-32866 on February 21st 2026
+17709 on March 09 2026
 
 ```
 SELECT (COUNT(*) as ?eff)
 WHERE
     {
-    ### subquery adding the distinct clause
         {
-        SELECT DISTINCT ?item
+        SELECT DISTINCT ?archaeologist
         WHERE {
-        ?item wdt:P31 wd:Q5; 
-              wdt:P569 ?birthDate.
+        ?archaeologist wdt:P31 wd:Q5; 
+                       wdt:P569 ?birthDate;
+                       wdt:P106 wd:Q3621491.
         BIND(REPLACE(str(?birthDate), "(.*)([0-9]{4})(.*)", "$2") AS ?year)
-        FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981)# Any instance of a human.
-            {?item wdt:P106 wd:Q11063}
-            UNION
-            {?item wdt:P101 wd:Q333} 
-            UNION
-            {?item wdt:P106 wd:Q169470}
-            UNION
-            {?item wdt:P101 wd:Q413}  
+        FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981) 
             }
-        }  
+        } 
+SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en".} 
     }  
+
 ```
+
+**SELECT DISTINCT:** using this function prevents dupplicates being counted individually. In this case each archaeologist can only have a single entry for their birth date counted.
+
+```
+BIND(REPLACE(str(?birthDate), "(.*)([0-9]{4})(.*)", "$2") AS ?year)
+```
+
+This piece of code first turns the located birth date of an archaeologist, which is initially stored as an integer and turns it into a string. Now the program can locate the string of numbers that is 4 characters long: the year of birth. This value is then stored in the variable ?year. This process extracts the year of birth from the full birth date allowing for a better comparison, since the month and day are less relevant and are not available in all cases.
+
+```
+FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981)
+```
+
+This piece of code first turns the ?year variable into an integer, after which values between 1780 and 1981 are found.
 
 ### Inspect individuals
 
 ```
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT DISTINCT ?item ?itemLabel ?year
+SELECT DISTINCT ?archaeologist ?archaeologistLabel ?year
 WHERE {
-    {
   
-        {?item wdt:P106 wd:Q11063}
-        UNION
-        {?item wdt:P101 wd:Q333} 
-        UNION
-        {?item wdt:P106 wd:Q169470}
-        UNION
-        {?item wdt:P101 wd:Q413} 
-    }  
-    ?item wdt:P31 wd:Q5;  # Any instance of a human.
-            wdt:P569 ?birthDate.
+           ?archaeologist wdt:P31 wd:Q5;
+                          wdt:P106 wd:Q3621491;
+                          wdt:P569 ?birthDate.
   BIND(REPLACE(str(?birthDate), "(.*)([0-9]{4})(.*)", "$2") AS ?year)
         FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981)
   
@@ -211,11 +203,13 @@ WHERE {
     # SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }
 
     ## This is useful for query from external tool
-    ?item rdfs:label ?itemLabel.
+    ?archaeologist rdfs:label ?archaeologistLabel.
     FILTER(LANG(?itemLabel) = 'en')
     }  
 LIMIT 100
 ```
+
+This code gives you a list of 100 archaeologists that have recorded birthdates and their recorded birthdates using only the English lables retrieved from outside Wikidata, specifically from the site indicated in the prefix to be saved under **rdfs**.
 
 ### Count population with English labels
 
@@ -226,24 +220,24 @@ WHERE
     {
     ### subquery adding the distinct clause
         {
-        SELECT DISTINCT ?item ?itemLabel ?year
-        WHERE {
-        ?item wdt:P31 wd:Q5; 
-              wdt:P569 ?birthDate.
-        BIND(REPLACE(str(?birthDate), "(.*)([0-9]{4})(.*)", "$2") AS ?year)
-        FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981)# Any instance of a human.
-            {?item wdt:P106 wd:Q11063}
-            UNION
-            {?item wdt:P101 wd:Q333} 
-            UNION
-            {?item wdt:P106 wd:Q169470}
-            UNION
-            {?item wdt:P101 wd:Q413}  
-        ?item rdfs:label ?itemLabel.
-        FILTER(LANG(?itemLabel) = 'en')
+SELECT DISTINCT ?archaeologist ?archaeologistLabel ?year
+
+#Since this is not just filtering using ?archaeologists a single individual could be counted multiple times, so long as the combination of the three variable values is unique. This is just like if your primary key in a database is a unique combination between multiple entries on the table rather than a single entry.
+
+WHERE {
+  
+           ?archaeologist wdt:P31 wd:Q5;
+                          wdt:P106 wd:Q3621491;
+                          wdt:P569 ?birthDate.
+  BIND(REPLACE(str(?birthDate), "(.*)([0-9]{4})(.*)", "$2") AS ?year)
+        FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981)
+  
+    ?archaeologist rdfs:label ?archaeologistLabel.
+    FILTER(LANG(?archaeologistLabel) = 'en')
+    }
             }
-        }  
-    }  
+        } 
+
 ```
 
 ### Number of individuals without English label
