@@ -213,6 +213,8 @@ This code gives you a list of 100 archaeologists that have recorded birthdates a
 
 ### Count population with English labels
 
+17192 on March 09 2026
+
 ```
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 SELECT (COUNT(*) as ?eff)
@@ -240,75 +242,62 @@ WHERE {
 
 ```
 
-### Number of individuals without English label
+### Number of individuals without English labels
+
+614 on March 09 2026
 
 ```
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 SELECT (COUNT(*) as ?eff)
 WHERE
     {
-    ### sous requête qui ajoute la clause distinct
         {
-        SELECT DISTINCT ?item ?itemLabel ?year
+        SELECT DISTINCT ?archaeologist ?archaeologistLabel ?year
         WHERE {
-        ?item wdt:P31 wd:Q5; 
-              wdt:P569 ?birthDate.
+        ?archaeologist wdt:P31 wd:Q5;
+                       wdt:P106 wd:Q3621491;
+                       wdt:P569 ?birthDate.
         BIND(REPLACE(str(?birthDate), "(.*)([0-9]{4})(.*)", "$2") AS ?year)
-        FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981)# Any instance of a human.
-            {?item wdt:P106 wd:Q11063}
-            UNION
-            {?item wdt:P101 wd:Q333} 
-            UNION
-            {?item wdt:P106 wd:Q169470}
-            UNION
-            {?item wdt:P101 wd:Q413}  
-        MINUS {?item rdfs:label ?itemLabel.
-            FILTER(LANG(?itemLabel) = 'en')
+        FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981) 
+        MINUS {?archaeologist rdfs:label ?archaeologistLabel.
+            FILTER(LANG(?archaeologistLabel) = 'en') # MINUS: filters out whatever is specified after it.
             }
             }
         }  
     }  
+
 ```
 
 ### Individuals without English label
 
-Inspect individuals' cards and observe their properties
+Inspect individuals' cards and observe their properties. The code determines what languages do the entries of archaeologists that have no English entry have.
 
-```
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX wd: <http://www.wikidata.org/entity/>
 PREFIX wdt: <http://www.wikidata.org/prop/direct/>
-SELECT ?item ?year (group_concat(?iso_lang ; separator = ',') as ?langs) (max(?itemLabel) as ?maxLabel)
-WHERE
-    { 
-       { SELECT DISTINCT ?item ?year
-        WHERE {
-        ?item wdt:P31 wd:Q5; 
-              wdt:P569 ?birthDate.
-        BIND(REPLACE(str(?birthDate), "(.*)([0-9]{4})(.*)", "$2") AS ?year)
-        FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981)# Any instance of a human.
-            {?item wdt:P106 wd:Q11063}
-            UNION
-            {?item wdt:P101 wd:Q333} 
-            UNION
-            {?item wdt:P106 wd:Q169470}
-            UNION
-            {?item wdt:P101 wd:Q413}  
-        MINUS {?item rdfs:label ?itemLabel.
-            FILTER(LANG(?itemLabel) = 'en')
-            }
-            }
-        }  
-  
-        ?item rdfs:label ?itemLabel. 
-		BIND(LANG(?itemLabel) as ?iso_lang)
-  
+
+SELECT ?archaeologist ?year 
+       (group_concat(?iso_lang ; separator = ',') AS ?langs) #concatinates the language shortenings with commas in between and saves the string as ?langs.
+       (max(?archaeologistLabel) AS ?nameLabel)
+WHERE {
+      {SELECT DISTINCT ?archaeologist ?year #this second select needs to be separately packaged. All this does is find all the archaeologists without an English entry.
+         WHERE {?archaeologist wdt:P31 wd:Q5 ;
+                               wdt:P106 wd:Q3621491 ;
+                               wdt:P569 ?birthDate .
+         BIND(REPLACE(str(?birthDate), "(.*)([0-9]{4})(.*)", "$2") AS ?year)
+         FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981)
+         MINUS {?archaeologist rdfs:label ?archaeologistLabel.
+               FILTER(LANG(?archaeologistLabel) = 'en')}
+         }
        }
-	   GROUP BY ?item ?year
-	   ORDER BY ?item
-	   LIMIT 100
-```
+       ?archaeologist rdfs:label ?archaeologistLabel .  
+       BIND(LANG(?archaeologistLabel) AS ?iso_lang) #What languages are the entries for archaeologists without English entries.
+}
+GROUP BY ?archaeologist ?year #Groups by archaeologist and the birth years.
+ORDER BY ?archaeologist # Alphapetically/numerically sorted based on the id of the archaeologist.
+LIMIT 100
+
 
 ## List the available properties and their numbers.
 
@@ -353,7 +342,6 @@ WHERE {
     }  
 ORDER BY DESC(?eff) 
 ```
-
 **NB**. Please note that timeout issues may occur when executing the query on the Wikidata SPARQL endpoint. This is because the query takes too long to process and an error message appears.
 &nbsp;
 In this case, you must restrict the period of time considered or limit the number of UNION clauses and break the query down into different parts.
@@ -406,7 +394,6 @@ WHERE {
     }  
 ORDER BY DESC(?eff) 
 ```
-
 Relevant incoming properties:
 
 
@@ -477,7 +464,6 @@ WHERE {
     }  
 ORDER BY ?propLabel ?itemType 
 ```
-
 ## Same query but grouped
 
 ```
