@@ -17,44 +17,37 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 
-SELECT DISTINCT ?item  ?gender ?year ?itemLabel
+SELECT DISTINCT ?archaeologist  ?gender ?year ?archaeologistLabel
         WHERE {
 
         ## note the service address  
         SERVICE <https://query.wikidata.org/sparql>
-            {
-            {?item wdt:P106 wd:Q11063}  # astronomer
-            UNION
-            {?item wdt:P101 wd:Q333}     # astronomy
-            UNION
-            {?item wdt:P106 wd:Q169470}  # physicist
-            UNION
-            {?item wdt:P101 wd:Q413}     # physics   
+            {   
   
-            ?item wdt:P31 wd:Q5;  # Any instance of a human.
-                wdt:P569 ?birthDate; # It must necessarily have a birth date property
+            ?archaeologist wdt:P31 wd:Q5;
+                          wdt:P106 wd:Q3621491;
+                            wdt:P569 ?birthDate; # It must necessarily have a birth date property
 
         BIND(year(?birthDate) as ?year)
-        FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981 )
+        FILTER(xsd:integer(?year) > 1700 && xsd:integer(?year) < 2001 )
   
         OPTIONAL {
             # The item can have or not a gender property
-            ?item wdt:P21 ?gender.
+            ?archaeologist wdt:P21 ?gender.
         }
   
         OPTIONAL {
-	     ?item rdfs:label ?itemLabel.
-        FILTER(LANG(?itemLabel) = 'en')
+	     ?archaeologist rdfs:label ?archaeologistLabel.
+        FILTER(LANG(?archaeologistLabel) = 'en')
     }
         }
         }
-        LIMIT 10
   
 ```
 
 ### Get the number of persons to be imported
 
-39170 people on March 8, 2026
+19331 people on March 17, 2026
 
 Note, however, that there are likely duplicate names, birthdates, etc., so the actual number is probably lower. We will discuss this further below.
 
@@ -69,31 +62,24 @@ WHERE {
 
         ## note the service address  
         SERVICE <https://query.wikidata.org/sparql>
-            {
-            {?item wdt:P106 wd:Q11063}  # astronomer
-            UNION
-            {?item wdt:P101 wd:Q333}     # astronomy
-            UNION
-            {?item wdt:P106 wd:Q169470}  # physicist
-            UNION
-            {?item wdt:P101 wd:Q413}     # physics   
-  
-            ?item wdt:P31 wd:Q5;  # Any instance of a human.
+             { 
+            ?archaeologist wdt:P31 wd:Q5;
+                          wdt:P106 wd:Q3621491;
                 wdt:P569 ?birthDate; # It must necessarily have a birth date property
   
         BIND(year(?birthDate) as ?year)
 
         ## DO NOT USE THIS FILTER IF NOT NEEDED
-        FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981 )
+        FILTER(xsd:integer(?year) > 1700 && xsd:integer(?year) < 2001 )
   
         OPTIONAL {
             # The item can have or not a gender property
-            ?item wdt:P21 ?gender.
+            ?archaeologist wdt:P21 ?gender.
         }
   
         OPTIONAL {
-	     ?item rdfs:label ?itemLabel.
-        FILTER(LANG(?itemLabel) = 'en')
+	     ?archaeologist rdfs:label ?archaeologistLabel.
+        FILTER(LANG(?archaeologistLabel) = 'en')
     }
    
         }
@@ -116,29 +102,22 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 CONSTRUCT 
         {
-           ?item wdt:P21 ?gender.
-           ?item  wdt:P569 ?year.
-           ?item rdfs:label ?itemLabel.
-           # ?item  wdt:P31 wd:Q5.
+           ?archaeologist wdt:P21 ?gender.
+           ?archaeologist  wdt:P569 ?year.
+           ?archaeologist rdfs:label ?archaeologistLabel.
+           # ?archaeologist  wdt:P31 wd:Q5.
            # Noter qu'on modifie pour disposer de la propriété standard
            # afin de déclarer l'appartenance d'une instance à une classe
-           ?item  rdf:type wd:Q5. }
+           ?archaeologist  rdf:type wd:Q5. }
   
         WHERE {
 
         ## note the service address  
         SERVICE <https://query.wikidata.org/sparql>
             {
-            {?item wdt:P106 wd:Q11063}  # astronomer
-            UNION
-            {?item wdt:P101 wd:Q333}     # astronomy
-            UNION
-            {?item wdt:P106 wd:Q169470}  # physicist
-            UNION
-            {?item wdt:P101 wd:Q413}     # physics   
-  
-            ?item wdt:P31 wd:Q5;  # Any instance of a human.
-                wdt:P569 ?birthDate; # It must necessarily have a birth date property
+            ?archaeologist wdt:P31 wd:Q5;
+                          wdt:P106 wd:Q3621491;
+                wdt:P569 ?birthDate; # It must necessarily have a birth date property  
 
         BIND(year(?birthDate) as ?year)
 
@@ -147,12 +126,12 @@ CONSTRUCT
 
         OPTIONAL {
             # The item can have or not a gender property
-            ?item wdt:P21 ?gender.
+            ?archaeologist wdt:P21 ?gender.
         }
   
         OPTIONAL {
-	     ?item rdfs:label ?itemLabel.
-        FILTER(LANG(?itemLabel) = 'en')
+	     ?archaeologist rdfs:label ?archaeologistLabel.
+        FILTER(LANG(?archaeologistLabel) = 'en')
     }
    
         }
@@ -180,9 +159,9 @@ In a triplestore so called GRAPHs allow to keep together a set of triples. This 
 | &lt;http://test1.org/graph1&gt; | &lt;http://test1.org/i1&gt; | &lt;http://test1.org/p1&gt; | &lt;http://test1.org/i2&gt; |
 |                           |                       |                       |                       |
 
-A *quad*: graph, subject, property, opject
+A *quad*: graph, subject, property, object
 
-A *triple*: subject, property, opject
+A *triple*: subject, property, object
 
 
 A graph is a set of triples.
@@ -225,55 +204,46 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 INSERT {
 
         ### Note that the data is imported into a named graph and not the DEFAULT one
-        GRAPH <https://historian.digital/astronomers/graphs-defs.html#wikidata>
-        {?item  wdt:P21 ?gender.
-           ?item wdt:P569 ?year. 
-           ?item rdfs:label ?itemLabel.           # ?item  wdt:P31 wd:Q5.
+        GRAPH <https://github.com/EB-Agrippina/LOD-Seminar-FS2026/graphs-defs.html#wikidata>
+        {?archaeologist  wdt:P21 ?gender.
+           ?archaeologist wdt:P569 ?year. 
+           ?archaeologist rdfs:label ?archaeologistLabel.           # ?archaeologist  wdt:P31 wd:Q5.
            # modifier pour disposer de la propriété standard
-           ?item  rdf:type wd:Q5.
+           ?archaeologist  rdf:type wd:Q5.
            }
 }
   
         WHERE {
   
-  			SELECT DISTINCT ?item ?year ?gender ?itemLabel
+  			SELECT DISTINCT ?archaeologist ?year ?gender ?archaeologistLabel
   
   			WHERE {
 
         ## note the service address  
         SERVICE <https://query.wikidata.org/sparql>
             {
-            {?item wdt:P106 wd:Q11063}  # astronomer
-            UNION
-            {?item wdt:P101 wd:Q333}     # astronomy
-            UNION
-            {?item wdt:P106 wd:Q169470}  # physicist
-            UNION
-            {?item wdt:P101 wd:Q413}     # physics   
-  
-            ?item wdt:P31 wd:Q5;  # Any instance of a human.
-                wdt:P569 ?birthDate. # It must necessarily have a birth date property
-
-
+             ?archaeologist wdt:P31 wd:Q5;
+                            wdt:P106 wd:Q3621491;
+                            wdt:P569 ?birthDate; # It must necessarily have a birth date property  
 
         BIND(year(?birthDate) as ?year)
 
         ## DO NOT USE THIS FILTER IF NOT NEEDED
-        FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981 )
+        FILTER(xsd:integer(?year) > 1700 && xsd:integer(?year) < 2001 )
   
         OPTIONAL {
             # The item can have or not a gender property
-            ?item wdt:P21 ?gender.
+            ?archaeologist wdt:P21 ?gender.
         }
   
         OPTIONAL {
-	     ?item rdfs:label ?itemLabel.
-        FILTER(LANG(?itemLabel) = 'en')
+	     ?archaeologist rdfs:label ?archaeologistLabel.
+        FILTER(LANG(?archaeologistLabel) = 'en')
     }
    
         }
         }
-    ORDER BY ?item 
+    ORDER BY ?archaeologist 
     OFFSET 0
     LIMIT 10000
 }
@@ -310,7 +280,7 @@ PREFIX wd: <http://www.wikidata.org/entity/>
 
 SELECT *
 WHERE {
-  GRAPH <https://historian.digital/astronomers/graphs-defs.html#wikidata> {
+  GRAPH <https://github.com/EB-Agrippina/LOD-Seminar-FS2026/graphs-defs.html#wikidata> {
   ?item  a wd:Q5;
         ?p ?o.
         }
@@ -331,14 +301,14 @@ If for some reason you are not happy with the results, simply clear your graph a
 However, be aware that this query will EMPTY YOUR GRAPH of all the triples.
 
 ```
-CLEAR GRAPH <https://historian.digital/astronomers/graphs-defs.html#wikidata>
+CLEAR GRAPH <https://github.com/EB-Agrippina/LOD-Seminar-FS2026/graphs-defs.html#wikidata>
 
 ```
 
 
 ### Count imported data
 
-Imported: 32677.
+Imported: 18936.
 
 
 
@@ -347,10 +317,10 @@ PREFIX wd: <http://www.wikidata.org/entity/>
 
 SELECT (COUNT(*) as ?number)
 WHERE {
-  GRAPH <https://historian.digital/astronomers/graphs-defs.html#wikidata> {
+  GRAPH <https://github.com/EB-Agrippina/LOD-Seminar-FS2026/graphs-defs.html#wikidata> {
   ## deux expressions équivalentes
-  # ?item  rdf:type wd:Q5
-  ?item  a wd:Q5
+  # ?archaeologist  rdf:type wd:Q5
+  ?archaeologist  a wd:Q5
         }
 }
   
@@ -366,22 +336,22 @@ This issue will be addressed when the data is prepared for analysis.
 
 ### Multiple dates
 
-Inspect the pages of some persons in Wikidata: there will be two birth dates.
+Inspect the pages of some people in Wikidata: there will be two birth dates.
 
 ```
 PREFIX wd: <http://www.wikidata.org/entity/>
 PREFIX wdt: <http://www.wikidata.org/prop/direct/>
 
-SELECT (COUNT(*) as ?number) ?item
+SELECT (COUNT(*) as ?number) ?archaeologist
 WHERE {
-  GRAPH <https://historian.digital/astronomers/graphs-defs.html#wikidata> {
+  GRAPH <https://github.com/EB-Agrippina/LOD-Seminar-FS2026/graphs-defs.html#wikidata> {
   ## deux expressions équivalentes
-  # ?item  rdf:type wd:Q5
-  ?item  a wd:Q5;
+  # ?archaeologist  rdf:type wd:Q5
+  ?archaeologist  a wd:Q5;
    wdt:P569 ?birthDate.
         }
 }
-GROUP BY ?item
+GROUP BY ?archaeologist
 HAVING (COUNT(*) > 1)
 ```
 
@@ -392,16 +362,16 @@ PREFIX wd: <http://www.wikidata.org/entity/>
 PREFIX wdt: <http://www.wikidata.org/prop/direct/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT (COUNT(*) as ?number) ?item
+SELECT (COUNT(*) as ?number) ?archaeologist
 WHERE {
-  GRAPH <https://historian.digital/astronomers/graphs-defs.html#wikidata> {
+  GRAPH <https://github.com/EB-Agrippina/LOD-Seminar-FS2026/graphs-defs.html#wikidata> {
   ## deux expressions équivalentes
-  # ?item  rdf:type wd:Q5
-  ?item  a wd:Q5;
+  # ?archaeologist  rdf:type wd:Q5
+  ?archaeologist  a wd:Q5;
    wdt:P21 ?gender.
         }
 }
-GROUP BY ?item
+GROUP BY ?archaeologist
 HAVING (COUNT(*) > 1)
 ```
 
@@ -413,16 +383,16 @@ PREFIX wdt: <http://www.wikidata.org/prop/direct/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 
-SELECT (COUNT(*) as ?number) ?item
+SELECT (COUNT(*) as ?number) ?archaeologist 
 WHERE {
-  GRAPH <https://historian.digital/astronomers/graphs-defs.html#wikidata> {
+  GRAPH <https://github.com/EB-Agrippina/LOD-Seminar-FS2026/graphs-defs.html#wikidata> {
   ## deux expressions équivalentes
-  # ?item  rdf:type wd:Q5
-  ?item  a wd:Q5;
+  # ?archaeologist   rdf:type wd:Q5
+  ?archaeologist   a wd:Q5;
     rdfs:label ?label.
         }
 }
-GROUP BY ?item
+GROUP BY ?archaeologist 
 HAVING (COUNT(*) > 1)
 ```
 
@@ -432,7 +402,7 @@ HAVING (COUNT(*) > 1)
 
 ### Find persons without labels
 
-1911 persons
+702 persons
 
 ```
 PREFIX wd: <http://www.wikidata.org/entity/>
@@ -440,9 +410,9 @@ PREFIX wdt: <http://www.wikidata.org/prop/direct/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 SELECT (COUNT(*) AS ?number)
 WHERE {
-    GRAPH <https://historian.digital/astronomers/graphs-defs.html#wikidata> {
-    ?item  a wd:Q5.
-    MINUS { ?item rdfs:label ?label}
+    GRAPH <https://github.com/EB-Agrippina/LOD-Seminar-FS2026/graphs-defs.html#wikidata> {
+    ?archaeologist  a wd:Q5.
+    MINUS { ?archaeologist rdfs:label ?label}
     }
 }
 ```
@@ -460,34 +430,27 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 
-SELECT DISTINCT ?item ?item_non_en_label
+SELECT DISTINCT ?archaeologist ?archaeologist_non_en_label
 WHERE {
     ## note the service address  
     SERVICE <https://query.wikidata.org/sparql>
         {
             ### find persons without english label
             {
-            {?item wdt:P106 wd:Q11063}  # astronomer
-            UNION
-            {?item wdt:P101 wd:Q333}     # astronomy
-            UNION
-            {?item wdt:P106 wd:Q169470}  # physicist
-            UNION
-            {?item wdt:P101 wd:Q413}     # physics   
-
-            ?item wdt:P31 wd:Q5;  # Any instance of a human.
-                wdt:P569 ?birthDate; # It must necessarily have a birth date property
+            ?archaeologist  wdt:P31 wd:Q5;
+                            wdt:P106 wd:Q3621491;
+                            wdt:P569 ?birthDate; # It must necessarily have a birth date property 
 
         BIND(year(?birthDate) as ?year)
-        FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981 )
+        FILTER(xsd:integer(?year) > 1700 && xsd:integer(?year) < 2001 )
         
         MINUS {
-            ?item rdfs:label ?itemLabel.
-            FILTER(LANG(?itemLabel) = 'en')
+            ?archaeologist rdfs:label ?archaeologistLabel.
+            FILTER(LANG(?archaeologistLabel) = 'en')
             }
         }
         ### get labels for these persons
-        ?item rdfs:label ?item_non_en_label                     
+        ?archaeologist rdfs:label ?archaeologist_non_en_label                     
     }
 }
 LIMIT 10
@@ -511,9 +474,9 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 INSERT {
 
         ### Note that the data is imported into a named graph and not the DEFAULT one
-        GRAPH <https://historian.digital/astronomers/graphs-defs.html#wikidata>
+        GRAPH <https://github.com/EB-Agrippina/LOD-Seminar-FS2026/graphs-defs.html#wikidata>
         {
-           ?item rdfs:label ?item_non_en_label.
+           ?archaeologist rdfs:label ?archaeologist_non_en_label.
            }
 }
 WHERE {
@@ -522,27 +485,20 @@ WHERE {
         {
             ### find persons without english label
             {
-            {?item wdt:P106 wd:Q11063}  # astronomer
-            UNION
-            {?item wdt:P101 wd:Q333}     # astronomy
-            UNION
-            {?item wdt:P106 wd:Q169470}  # physicist
-            UNION
-            {?item wdt:P101 wd:Q413}     # physics   
-
-            ?item wdt:P31 wd:Q5;  # Any instance of a human.
-                wdt:P569 ?birthDate; # It must necessarily have a birth date property
+            ?archaeologist  wdt:P31 wd:Q5;
+                            wdt:P106 wd:Q3621491;
+                            wdt:P569 ?birthDate; # It must necessarily have a birth date property 
 
         BIND(year(?birthDate) as ?year)
-        FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981 )
+        FILTER(xsd:integer(?year) > 1700 && xsd:integer(?year) < 2001 )
         
         MINUS {
-            ?item rdfs:label ?itemLabel.
-            FILTER(LANG(?itemLabel) = 'en')
+            ?archaeologist rdfs:label ?archaeologistLabel.
+            FILTER(LANG(?archaeologistLabel) = 'en')
             }
         }
         ### get labels for these persons
-        ?item rdfs:label ?item_non_en_label                     
+        ?archaeologist rdfs:label ?archaeologist_non_en_label                     
     }
 }
 ```
@@ -559,9 +515,10 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 SELECT *
 # SELECT (COUNT(*) AS ?number)
 WHERE {
-    GRAPH <https://historian.digital/astronomers/graphs-defs.html#wikidata> {
-    ?item  a wd:Q5.
-    ?item rdfs:label ?label.
+    GRAPH <https://github.com/EB-Agrippina/LOD-Seminar-FS2026/graphs-defs.html#wikidata> 
+    {
+    ?archaeologist  a wd:Q5.
+    ?archaeologist rdfs:label ?label.
     FILTER(LANG(?label) !='en')
     }
 }
@@ -581,7 +538,7 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 INSERT DATA {
-    GRAPH <https://historian.digital/astronomers/graphs-defs.html#wikidata>
+    GRAPH <https://github.com/EB-Agrippina/LOD-Seminar-FS2026/graphs-defs.html#wikidata>
     {
         wd:Q5 rdfs:label "Person".
     }
@@ -606,7 +563,7 @@ WHERE
    {
    SELECT DISTINCT ?gender
    WHERE {
-      GRAPH <https://historian.digital/astronomers/graphs-defs.html#wikidata>
+      GRAPH <https://github.com/EB-Agrippina/LOD-Seminar-FS2026/graphs-defs.html#wikidata>
          {
             ?s wdt:P21 ?gender.
          }
@@ -627,7 +584,7 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX wd: <http://www.wikidata.org/entity/>
 PREFIX wdt: <http://www.wikidata.org/prop/direct/>
 
-WITH <https://historian.digital/astronomers/graphs-defs.html#wikidata>
+WITH <https://github.com/EB-Agrippina/LOD-Seminar-FS2026/graphs-defs.html#wikidata>
 INSERT {
    ?gender rdf:type wd:Q48264.
 }
@@ -652,7 +609,7 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 INSERT DATA {
-    GRAPH <https://historian.digital/astronomers/graphs-defs.html#wikidata>
+    GRAPH <https://github.com/EB-Agrippina/LOD-Seminar-FS2026/graphs-defs.html#wikidata>
     {
         wd:Q48264 rdfs:label "Gender Identity".
     }
@@ -678,7 +635,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 select distinct ?class ?classLabel
 where {
 
-    GRAPH <https://historian.digital/astronomers/graphs-defs.html#wikidata> {
+    GRAPH <https://github.com/EB-Agrippina/LOD-Seminar-FS2026/graphs-defs.html#wikidata> {
   ?s a ?class.
   ?class rdfs:label ?classLabel
   }
@@ -700,7 +657,7 @@ WHERE {
 
     {SELECT DISTINCT ?gen
     WHERE {
-        GRAPH <https://historian.digital/astronomers/graphs-defs.html#wikidata>  
+        GRAPH <https://github.com/EB-Agrippina/LOD-Seminar-FS2026/graphs-defs.html#wikidata>  
             {?s wdt:P21 ?gen}
     }
     }   
@@ -721,14 +678,14 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX wdt: <http://www.wikidata.org/prop/direct/>
 
 INSERT {
-    GRAPH <https://historian.digital/astronomers/graphs-defs.html#wikidata>
+    GRAPH <https://github.com/EB-Agrippina/LOD-Seminar-FS2026/graphs-defs.html#wikidata>
     {?gen rdfs:label ?genLabel}
 }
 WHERE {  
 
     {SELECT DISTINCT ?gen
     WHERE {
-        GRAPH <https://historian.digital/astronomers/graphs-defs.html#wikidata>  
+        GRAPH <https://github.com/EB-Agrippina/LOD-Seminar-FS2026/graphs-defs.html#wikidata>  
             {?s wdt:P21 ?gen}
     }
     }   
@@ -740,4 +697,4 @@ WHERE {
     FILTER(LANG(?genLabel) = 'en')
     }
 }
-```m
+```
