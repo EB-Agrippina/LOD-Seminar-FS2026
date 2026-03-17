@@ -371,20 +371,13 @@ WHERE {
 {
     SELECT DISTINCT  ?p  (count(*) as ?eff)
     WHERE {
-        ?item wdt:P31 wd:Q5; 
-             wdt:P569 ?birthDate.
+        ?archaeologist wdt:P31 wd:Q5;
+                       wdt:P106 wd:Q3621491 ; 
+                       wdt:P569 ?birthDate.
         BIND(REPLACE(str(?birthDate), "(.*)([0-9]{4})(.*)", "$2") AS ?year)
         FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981)# Any instance of a human.
-            {?item wdt:P106 wd:Q11063}
-            UNION
-            {?item wdt:P101 wd:Q333} 
-            UNION
-            {?item wdt:P106 wd:Q169470}
-            UNION
-            {?item wdt:P101 wd:Q413}.
-
             ## inversed triple
-			?s ?p ?item.
+			?s ?p ?archaeologist.
         }
 		GROUP BY ?p
     }
@@ -393,28 +386,30 @@ WHERE {
     ?prop rdfs:label ?propLabel.
         FILTER(LANG(?propLabel) = 'en')
     }  
-ORDER BY DESC(?eff) 
+ORDER BY DESC(?eff)
+Limit 500
 ```
 
 Relevant incoming properties:
 
-
-| p                                         | propLabel              | eff     | notes |
-| ------------------------------------------- | ------------------------ | --------- | ------- |
-| http://www.wikidata.org/prop/direct/P50   | author                 | 1012032 |       |
-| http://www.wikidata.org/prop/direct/P61   | discoverer or inventor | 83956   |       |
-| http://www.wikidata.org/prop/direct/P184  | doctoral advisor       | 25018   |       |
-| http://www.wikidata.org/prop/direct/P138  | named after            | 18336   |       |
-| http://www.wikidata.org/prop/direct/P921  | main subject           | 8428    |       |
-| http://www.wikidata.org/prop/direct/P185  | doctoral student       | 7617    |       |
-| http://www.wikidata.org/prop/direct/P40   | child                  | 3218    |       |
-| http://www.wikidata.org/prop/direct/P22   | father                 | 2835    |       |
-| http://www.wikidata.org/prop/direct/P1346 | winner                 | 2644    |       |
-| http://www.wikidata.org/prop/direct/P26   | spouse                 | 2120    |       |
-| http://www.wikidata.org/prop/direct/P1066 | student of             | 2035    |       |
-| http://www.wikidata.org/prop/direct/P3373 | sibling                | 1982    |       |
-| http://www.wikidata.org/prop/direct/P1889 | different from         | 1618    |       |
-| http://www.wikidata.org/prop/direct/P802  | student                | 1375    |       |
+| p                                          | propLabel                                            | eff   | notes |
+| ------------------------------------------ | ---------------------------------------------------- | ----- | ----- |
+| http://www.wikidata.org/prop/direct/P50    | author                                               | 73652 |       |
+| http://www.wikidata.org/prop/direct/P61    | discoverer or inventor                               | 3362  |       |
+| http://www.wikidata.org/prop/direct/P921   | main subject                                         | 2889  |       |
+| http://www.wikidata.org/prop/direct/P184   | doctoral advisor                                     | 1679  |       |
+| http://www.wikidata.org/prop/direct/P170   | creator                                              | 1480  |       |
+| http://www.wikidata.org/prop/direct/P98    | editor                                               | 1456  |       |
+| http://www.wikidata.org/prop/direct/P1066  | student of                                           | 861   |       |
+| http://www.wikidata.org/prop/direct/P185   | doctoral student                                     | 837   |       |
+| http://www.wikidata.org/prop/direct/P4345  | director of archaeological fieldwork                 | 604   |       |
+| http://www.wikidata.org/prop/direct/P802   | student                                              | 498   |       |
+| http://www.wikidata.org/prop/direct/P710   | participant                                          | 441   |       |
+| http://www.wikidata.org/prop/direct/P1037  | director / manager                                   | 287   |       |
+| http://www.wikidata.org/prop/direct/P737   | influenced by                                        | 115   |       |
+| http://www.wikidata.org/prop/direct/P57    | director                                             | 70    |       |
+| http://www.wikidata.org/prop/direct/P1346  | winner                                               | 69    |       |
+     
 
 This is just a portion of the resulting downloaded CSV. If you have more you should also create a dedicated page for the incoming properties.
 
