@@ -17,33 +17,23 @@ PREFIX wd: <http://www.wikidata.org/entity/>
 PREFIX wdt: <http://www.wikidata.org/prop/direct/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-
-
-SELECT DISTINCT (?item AS ?person_uri) ?year ?gender_label ?gender_uri 
-WHERE {
-            {?item wdt:P106 wd:Q11063}  # astronomer
+SELECT DISTINCT (?archaeologist AS ?person_uri) ?year ?gender_label ?gender_uri ?person_label 
+   WHERE {
+            {?archaeologist wdt:P106 wd:Q3621491} # archaeologist
             UNION
-            {?item wdt:P101 wd:Q333}     # astronomy
-            UNION
-            {?item wdt:P106 wd:Q169470}  # physicist
-            UNION
-            {?item wdt:P101 wd:Q413}     # physics   
-  
-            ?item wdt:P31 wd:Q5;  # Any instance of a human.
+            {?archaeologist wdt:P101 wd:Q23498} # archaeology field 
+            ?archaeologist wdt:P31 wd:Q5; # Any instance of a human.
                 wdt:P569 ?birthDate; # It must necessarily have a birth date property
-
         BIND(year(?birthDate) as ?year)
         FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981 )
-  
         OPTIONAL {
             # The item can have or not a gender property
-            ?item wdt:P21 ?gender_uri.
+            ?archaeologist wdt:P21 ?gender_uri.
             ?gender_uri rdfs:label ?gender_label.
             FILTER(LANG(?gender_label) = 'en')
         }
-
-    }
-ORDER BY ?item
+			}
+ORDER BY ?archaeologist
 ```
 
 ### Import the result into the database
@@ -76,26 +66,21 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 
-SELECT DISTINCT (?item AS ?person_uri) ?person_label
+SELECT DISTINCT (?archaeologist AS ?person_uri) ?person_label
 WHERE {
-            {?item wdt:P106 wd:Q11063}  # astronomer
+            {?archaeologist wdt:P106 wd:Q3621491} # archaeologist
             UNION
-            {?item wdt:P101 wd:Q333}     # astronomy
-            UNION
-            {?item wdt:P106 wd:Q169470}  # physicist
-            UNION
-            {?item wdt:P101 wd:Q413}     # physics   
-  
-            ?item wdt:P31 wd:Q5;  # Any instance of a human.
+            {?archaeologist wdt:P101 wd:Q23498} # archaeology field 
+            ?archaeologist wdt:P31 wd:Q5;  # Any instance of a human.
                 wdt:P569 ?birthDate; # It must necessarily have a birth date property
 
         BIND(year(?birthDate) as ?year)
         FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981 )
   
-            ?item rdfs:label ?person_label.
+            ?archaeologist rdfs:label ?person_label.
             FILTER(LANG(?person_label) = 'en')
         }
-ORDER BY ?item
+ORDER BY ?archaeologist
 ```
 
 * execute the SPARQL query
@@ -111,27 +96,22 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 
-SELECT DISTINCT (?item AS ?person_uri) (min(?person_label_al) as ?person_label )
+SELECT DISTINCT (?archaeologist AS ?person_uri) (min(?person_label_al) as ?person_label )
 #SELECT (COUNT(*) AS ?n)
 WHERE {
-            {?item wdt:P106 wd:Q11063}  # astronomer
+            {?archaeologist wdt:P106 wd:Q3621491} # archaeologist
             UNION
-            {?item wdt:P101 wd:Q333}     # astronomy
-            UNION
-            {?item wdt:P106 wd:Q169470}  # physicist
-            UNION
-            {?item wdt:P101 wd:Q413}     # physics   
-  
-            ?item wdt:P31 wd:Q5;  # Any instance of a human.
+            {?archaeologist wdt:P101 wd:Q23498} # archaeology field 
+            ?archaeologist wdt:P31 wd:Q5;  # Any instance of a human.
                 wdt:P569 ?birthDate; # It must necessarily have a birth date property
 
         BIND(year(?birthDate) as ?year)
         FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981 )
-        MINUS{?item rdfs:label ?person_label_en.
+        MINUS{?archaeologist rdfs:label ?person_label_en.
               FILTER(LANG(?person_label_en) = 'en')   }
-       ?item rdfs:label ?person_label_al.
+       ?archaeologist rdfs:label ?person_label_al.
         }
-GROUP BY ?item
+GROUP BY ?archaeologist
 ```
 
 * save the query result in a CSV file called 'data/wdt_csv_data/person_label_non_en_import.csv'
