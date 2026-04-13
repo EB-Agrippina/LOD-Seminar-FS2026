@@ -57,7 +57,7 @@ WHERE {
             {?archaeologist wdt:P101 wd:Q23498} # archaeology field 
             ?archaeologist wdt:P31 wd:Q5;  # Any instance of a human.
                 wdt:P569 ?birthDate; # It must necessarily have a birth date property
-                
+
         BIND(year(?birthDate) as ?year)
         FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981 )   
        ?archaeologist wdt:P19 ?birth_place_uri.
@@ -90,20 +90,15 @@ SELECT ?birth_place_uri (MIN(?coordinates) as ?long_lat)
 WHERE {  
        {SELECT DISTINCT ?birth_place_uri
         WHERE {  
-            {?item wdt:P106 wd:Q11063}  # astronomer
+            {?archaeologist wdt:P106 wd:Q3621491} # archaeologist
             UNION
-            {?item wdt:P101 wd:Q333}     # astronomy
-            UNION
-            {?item wdt:P106 wd:Q169470}  # physicist
-            UNION
-            {?item wdt:P101 wd:Q413}     # physics   
-  
-            ?item wdt:P31 wd:Q5;  # Any instance of a human.
+            {?archaeologist wdt:P101 wd:Q23498} # archaeology field 
+            ?archaeologist wdt:P31 wd:Q5;  # Any instance of a human.
                 wdt:P569 ?birthDate; # It must necessarily have a birth date property
         BIND(year(?birthDate) as ?year)
         FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981 )
    
-       ?item wdt:P19 ?birth_place_uri.
+       ?archaeologist wdt:P19 ?birth_place_uri.
           }
         }
    
@@ -132,7 +127,7 @@ Export the result file into a CSV file to be analysed:
 
 ## Explore the place type taxonomy
 
-OPTIONAL
+OPTIONAL - Do not continue. Stop here
 
 ### Get the 'classes' of the places
 
