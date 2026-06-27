@@ -19,13 +19,9 @@ WHERE {
               wdt:P569 ?birthDate.
         BIND(REPLACE(str(?birthDate), "(.*)([0-9]{4})(.*)", "$2") AS ?year)
         FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981)# Any instance of a human.
-            {?person_uri wdt:P106 wd:Q11063}
+            {?person_uri wdt:P106 wd:Q3621491} # archaeologist
             UNION
-            {?person_uri wdt:P101 wd:Q333} 
-            UNION
-            {?person_uri wdt:P106 wd:Q169470}
-            UNION
-            {?person_uri wdt:P101 wd:Q413}  
+            {?person_uri wdt:P101 wd:Q23498} 
             }
         } 
 
@@ -81,13 +77,9 @@ WHERE {
               wdt:P569 ?birthDate.
         BIND(REPLACE(str(?birthDate), "(.*)([0-9]{4})(.*)", "$2") AS ?year)
         FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981)# Any instance of a human.
-            {?person_uri wdt:P106 wd:Q11063}
+            {?person_uri wdt:P106 wd:Q3621491} # archaeologist
             UNION
-            {?person_uri wdt:P101 wd:Q333} 
-            UNION
-            {?person_uri wdt:P106 wd:Q169470}
-            UNION
-            {?person_uri wdt:P101 wd:Q413}  
+            {?person_uri wdt:P101 wd:Q23498}  
             }
         } 
 
@@ -145,13 +137,9 @@ WHERE {
               wdt:P569 ?birthDate.
         BIND(REPLACE(str(?birthDate), "(.*)([0-9]{4})(.*)", "$2") AS ?year)
         FILTER(xsd:integer(?year) > 1780 && xsd:integer(?year) < 1981)# Any instance of a human.
-            {?person_uri wdt:P106 wd:Q11063}
+            {?person_uri wdt:P106 wd:Q3621491} # archaeologist
             UNION
-            {?person_uri wdt:P101 wd:Q333} 
-            UNION
-            {?person_uri wdt:P106 wd:Q169470}
-            UNION
-            {?person_uri wdt:P101 wd:Q413}  
+            {?person_uri wdt:P101 wd:Q23498}   
             }
         } 
 
