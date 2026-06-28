@@ -11,22 +11,51 @@ header{
     text-align: center;
     font-size: 35px;
     color: white;
+    padding: 0.5px;
 }
 
 
-body{
+article{
+	float: left;
     background-color: lightblue;
     font-family: Arial, Helvetica, sans-serif;
+    padding: 20px;
+  	width: 80%;
 }
 
+nav {
+  float: left;
+  width: 20%;
+  background: darkblue;
+  padding: 20px;
+  height: 520px;
+}
 
-footer {background-color: grey;}
+footer {
+	background-color: grey;
+	float: right;
+    width: 100%;
+}
+
+@media (max-width: 600px) {
+  nav, article {
+    width: 100%;
+    height: auto;
+    }
+}
 </style>
     
 </head>
 
-<body>
-<h1> Archaeologists </h1>
+<header><h1> Archaeologists </h1></header>
+
+<nav>
+    <lu>style="color:red;" >Text</lu>
+
+</nav>
+
+<article>
+
 <h2> Short Description </h2>
 <h2> Source Critique </h2>
 <h2> Researchquestions </h2>
@@ -36,7 +65,7 @@ footer {background-color: grey;}
 <h2> Overall Conclusions </h2>
 
 <p> paragraph </p>
-</body>
+</article>
 
 <footer>
     <p> footer </p>
