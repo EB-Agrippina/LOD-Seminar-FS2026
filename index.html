@@ -15,23 +15,23 @@ header{
 }
 
 
-article{
-	float: left;
-    background-color: lightblue;
-    font-family: Arial, Helvetica, sans-serif;
-    padding: 20px;
-  	width: 80%;
-}
+.container {
+            display: flex;
+        }
 
-nav {
-  float: left;
-  width: 20%;
-  background: rgb(32, 52, 58);
+        article {
+            background-color: lightblue;
+            font-family: Arial, Helvetica, sans-serif;
+            padding: 20px;
+            width: 80%;
+        }
 
-  padding: 20px;
-  height: 520px;
-  color: white;
-}
+        nav {
+            width: 20%;
+            background: rgb(32, 52, 58);
+            padding: 20px;
+            color: white;
+        }
 
 footer {
 	background-color: grey;
@@ -64,6 +64,8 @@ footer {
 
 <header><h1> Archaeologists </h1></header>
 
+<body>
+<div class="container">
 <nav>
     <ul>
         <li><a href="#Short-Description" style="color: white;">Short Description</a></li>
@@ -199,6 +201,9 @@ Q3:</b> Which secondary professions were most prevalent among archaeologists, an
 
 <p> paragraph </p>
 </article>
+</div>
+</body>
+
 
 <footer>
     <p> footer </p>
